@@ -1,0 +1,42 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <windows.h>
+
+using namespace std;
+
+//  ich definiere dies Dinge hier global damit von überall darauf zugreifen können 
+struct node {
+	long id = 0;
+	double lat, lon = 0;
+	double distance = -1.0;
+	node* vorgaenger = nullptr;
+	bool visited = false;
+	vector <node> neigbours;
+};
+vector <node> nodelist; // List mit allen Nodes (wird vom Parser belegt)
+node* ptrstart; // pointer auf den Startnode (wird vom Parser belegt)
+node* ptrziel; // pointer auf den Zielnode (wird vom Parser belegt)
+
+void parser(int pstartID, int pzielID) { // Trägt alle Nodes mit den richtigen Werten in die nodelist ein und belegt ptrstart und ptrziel
+}
+
+int main() {
+	// Temporär
+	int startID;
+	int zielID;
+	cout << "Start ID angeben:" << endl;
+	cin >> startID;
+	cout << "Ziel ID angeben:" << endl;
+	cin >> zielID;
+
+	// Parser
+	parser(startID, zielID);
+
+	// Djkstra
+
+
+	// Visualisierung
+
+	return 0;
+}

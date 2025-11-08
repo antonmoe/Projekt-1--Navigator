@@ -1,0 +1,37 @@
+- open Street mapp einbinden 
+- über Dijkstra Algorithmus route suchen
+- per sdl. Bibliothek visualisieren 
+- open Street mapp. org. 
+- Textdatei im Ilias
+- fstram io stream 
+- libaries nicht benutzen 
+- node grundelemnt (id longlong, lat und long position) 
+- können weitere informationen enthalten wie öffnungszeiten
+- straßen straßenname 
+- <node> </node> 
+- way aufgebaut mit nodes
+-  folge von <nd>s = richtung der straße 
+- Kreuzungen = wege welche dei selben knoten benutzen
+- norde: Crossing usw. 
+- 
+
+Dijkstras Algorithmus
+- verbindet zwei punkte auf dem kürzesten weg 
+- bessere Möglichkeit als Pythagoras
+- Distanz und Vorgänger für jeden knoten initialisieren 
+- startknoten mit Distanz = 0
+- Besuch 
+- berechne die Distanzen zu jedem weiteren kinderknoten
+- addiere sie zu der bisherigen Distanz 
+- besucht für kürzere Distanz knoten = 1 
+- Vorgänger einspeichern 
+- gleiches verfahren für nächsten knoten ( kleinste Distanz) identisch -> würfeln 
+- Zielknoten (Distanz mit Vorgänger eingespeichert) wenn auf anderen weg zu knoten gekommen dann wert nicht aktualisieren
+
+
+SDL
+- Distanzen skalieren 
+- daten für karte aus Ilias
+- Import der open Map daten, dijkstra algo. 
+
+
