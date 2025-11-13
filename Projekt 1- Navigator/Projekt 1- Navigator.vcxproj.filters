@@ -18,5 +18,13 @@
     <ClCompile Include="main.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="parser.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="head.h">
+      <Filter>Quelldateien</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

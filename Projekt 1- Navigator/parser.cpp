@@ -7,7 +7,10 @@
 
 using namespace std;
 
-//  ich definiere dies Dinge hier global damit von Ã¼berall darauf zugreifen kÃ¶nnen 
+string filePath = "C:/Users/anton/maposm.sec";
+
+
+//  ich definiere dies Dinge hier global damit von überall darauf zugreifen können 
 struct node {
 	unsigned long long id = 0;
 	double lat, lon = 0.0;
@@ -20,7 +23,7 @@ vector <node> nodelist; // List mit allen Nodes (wird vom Parser belegt)
 node* ptrstart; // pointer auf den Startnode (wird vom Parser belegt)
 node* ptrziel; // pointer auf den Zielnode (wird vom Parser belegt)
 
-unsigned long long powerof(unsigned long long base, unsigned long long pot) { // pow aber fÃ¼r unsigned long long
+unsigned long long powerof(unsigned long long base, unsigned long long pot) { // pow aber für unsigned long long
 	if (pot == 0) {
 		return 1;
 	}
@@ -33,7 +36,7 @@ unsigned long long powerof(unsigned long long base, unsigned long long pot) { //
 
 void add_intersection_to_nodelist(string data, unsigned long long pstartID, unsigned long long pzielID) {
 	unsigned long long tempid = 0;
-	double templat = 0.0; 
+	double templat = 0.0;
 	double templon = 0.0;
 	//cout << data << endl;
 	basic_string <char>::size_type nodeindexstart, nodeindexend;
@@ -46,10 +49,10 @@ void add_intersection_to_nodelist(string data, unsigned long long pstartID, unsi
 	// ID rausschreiben -> tempid
 	nodeindexstart = data.find(cstrB1);
 	nodeindexend = data.find(cstrB2);
-	string ID = data.substr(nodeindexstart+4, (nodeindexend-6) - nodeindexstart);
-	for (int i = ID.length()-1; i != -1; i--) {
+	string ID = data.substr(nodeindexstart + 4, (nodeindexend - 6) - nodeindexstart);
+	for (int i = ID.length() - 1; i != -1; i--) {
 		refStr1 = ID[i];
-		powwertID = (ID.length()-1) - i;
+		powwertID = (ID.length() - 1) - i;
 		tempid = tempid + (((unsigned long long)refStr1 - 48) * powerof(10, powwertID));
 	}
 	// lat rausschreiben -> templat
@@ -60,7 +63,7 @@ void add_intersection_to_nodelist(string data, unsigned long long pstartID, unsi
 	string lat = data.substr(nodeindexstart + 8, 7);
 	for (int i = lat.length() - 1; i != -1; i--) {
 		refStr1 = lat[i];
-		powwert = (i+1)*(-1);
+		powwert = (i + 1) * (-1);
 		templat = templat + (((double)refStr1 - 48) * powl(10.0, powwert));
 	}
 	templat = templat + 49.0;
@@ -73,10 +76,11 @@ void add_intersection_to_nodelist(string data, unsigned long long pstartID, unsi
 		templon = templon + (((double)refStr1 - 48) * powl(10.0, powwert));
 	}
 	templon = templon + 8.0;
-	node* crossing = new node{tempid,templat,templon,-1.0,nullptr};
+	node* crossing = new node{ tempid,templat,templon,-1.0,nullptr };
 	if (tempid == pstartID) {
 		ptrstart = crossing;
-	} else if (tempid == pzielID) {
+	}
+	else if (tempid == pzielID) {
 		ptrziel = crossing;
 	}
 	nodelist.push_back(*crossing);
@@ -91,7 +95,7 @@ void addneigbour(string nodeA, string nodeB) {
 	string burner = "9";
 	basic_string <char>::reference refStr1 = burner[0];
 	unsigned long long powwertID = 0;
-	// ID rausschreiben fÃ¼r nodeA
+	// ID rausschreiben für nodeA
 	nodeindexstart = nodeA.find(cstrC1);
 	nodeindexend = nodeA.find(cstrC2);
 	string ID = nodeA.substr(nodeindexstart + 5, (nodeindexend - 6) - nodeindexstart);
@@ -100,7 +104,7 @@ void addneigbour(string nodeA, string nodeB) {
 		powwertID = (ID.length() - 1) - i;
 		nodeAid = nodeAid + (((int)refStr1 - 48) * powerof(10, powwertID));
 	}
-	// ID rausschreiben fÃ¼r nodeB
+	// ID rausschreiben für nodeB
 	nodeindexstart = nodeB.find(cstrC1);
 	nodeindexend = nodeB.find(cstrC2);
 	ID = nodeB.substr(nodeindexstart + 5, (nodeindexend - 6) - nodeindexstart);
@@ -130,7 +134,23 @@ void addneigbour(string nodeA, string nodeB) {
 	}
 }
 
-void parser(unsigned long long pstartID, unsigned long long pzielID) { // TrÃ¤gt alle Nodes mit den richtigen Werten in die nodelist ein und belegt ptrstart und ptrziel
+void TEST_display_nodelist() {
+	for (int i = 0; !nodelist.empty() && i < nodelist.size(); i++) {
+		cout << "Element " << i << ": " << nodelist.at(i).id << " | lat: " << nodelist.at(i).lat << " | lon: " << nodelist.at(i).lon << endl;
+	}
+	cout << "TEST_display_nodelist - finished" << endl;
+}
+void TEST_show_neighbours_for_nodelist_at(int index) {
+	for (int i = 0; !nodelist.at(index).neigbours.empty() && i < nodelist.at(index).neigbours.size(); i++) {
+		cout << nodelist.at(index).neigbours.at(i).id << endl;
+	}
+	cout << "TEST_show_neighbours_for_nodelist_at - finished" << endl;
+}
+
+
+
+// parser als mit rückgabe der Node list bzw als graph struct
+void parser(unsigned long long pstartID, unsigned long long pzielID) { // Trägt alle Nodes mit den richtigen Werten in die nodelist ein und belegt ptrstart und ptrziel
 	string currentline;
 	string data;
 	//string checkline;
@@ -153,10 +173,13 @@ void parser(unsigned long long pstartID, unsigned long long pzielID) { // TrÃ¤gt
 	const char* cstr7 = "<way";
 	const char* cstr8 = "<nd";
 
+
+	
+
 	fstream Eingabedatei;
-	Eingabedatei.open("maposm.sec");
+	Eingabedatei.open(filePath);
 	if (Eingabedatei.good()) {
-		while (!Eingabedatei.eof()) { // lÃ¤uft die Datei von oben bis unten durch
+		while (!Eingabedatei.eof()) { // läuft die Datei von oben bis unten durch
 			getline(Eingabedatei, currentline);
 			if ((currentline.find(cstr1) != -1 && nodeidentifier) || (currentline.find(cstr7) != -1 && wayidentifier)) { // Abbruch falls "<node" auf "<node" folgt bzw "<way" auf "<way"
 				nodeidentifier = false;
@@ -168,45 +191,55 @@ void parser(unsigned long long pstartID, unsigned long long pzielID) { // TrÃ¤gt
 			if (currentline.find(cstr7) != -1) {
 				wayidentifier = true;
 				wayidentifiertwo = false;
-			} else if(wayidentifier && currentline.find(cstr8) != -1) {
+			}
+			else if (wayidentifier && currentline.find(cstr8) != -1) {
 				if (!wayidentifiertwo) {
 					data = currentline;
-				} else if (wayidentifiertwo) {
+				}
+				else if (wayidentifiertwo) {
 					addneigbour(currentline, data);
 				}
 				wayidentifiertwo = true;
-			} else {
+			}
+			else {
 				if (!nodeidentifier && currentline.find(cstr1) != -1) {
 					data = currentline;
 					nodeidentifier = true;
-				} else if (nodeidentifier && !nodeidentifiertwo && !nodeidentifierthree) { // Testet Zeile 1
+				}
+				else if (nodeidentifier && !nodeidentifiertwo && !nodeidentifierthree) { // Testet Zeile 1
 					if (currentline.find(cstr2) != -1 && currentline.find(":") == -1 && currentline.find(cstr5) == -1 && currentline.find(cstr6) == -1) {
 						// Valid
 						add_intersection_to_nodelist(data, pstartID, pzielID);
 						nodeidentifier = false;
 						nodeidentifiertwo = false;
 						nodeidentifierthree = false;
-					} else if (currentline.find(cstr3) != -1 || currentline.find(cstr4) != -1) {
+					}
+					else if (currentline.find(cstr3) != -1 || currentline.find(cstr4) != -1) {
 						nodeidentifiertwo = true;
-					} else {
+					}
+					else {
 						// Invalid
 						nodeidentifier = false;
 					}
-				} else if (nodeidentifier && nodeidentifiertwo && !nodeidentifierthree) { // Testet Zeile 2
+				}
+				else if (nodeidentifier && nodeidentifiertwo && !nodeidentifierthree) { // Testet Zeile 2
 					if (currentline.find(cstr2) != -1 && currentline.find(":") == -1 && currentline.find(cstr5) == -1 && currentline.find(cstr6) == -1) {
 						// Valid
 						add_intersection_to_nodelist(data, pstartID, pzielID);
 						nodeidentifier = false;
 						nodeidentifiertwo = false;
 						nodeidentifierthree = false;
-					} else if (currentline.find(cstr3) != -1 || currentline.find(cstr4) != -1) {
+					}
+					else if (currentline.find(cstr3) != -1 || currentline.find(cstr4) != -1) {
 						nodeidentifierthree = true;
-					} else {
+					}
+					else {
 						// Invalid
 						nodeidentifier = false;
 						nodeidentifiertwo = false;
 					}
-				} else if (nodeidentifier && nodeidentifiertwo && nodeidentifierthree) { // Testet Zeile 3
+				}
+				else if (nodeidentifier && nodeidentifiertwo && nodeidentifierthree) { // Testet Zeile 3
 					if (currentline.find(cstr2) != -1 && currentline.find(":") == -1 && currentline.find(cstr5) == -1 && currentline.find(cstr6) == -1) {
 						// Valid
 						add_intersection_to_nodelist(data, pstartID, pzielID);
@@ -220,27 +253,20 @@ void parser(unsigned long long pstartID, unsigned long long pzielID) { // TrÃ¤gt
 				}
 			}
 		}
-	} else {
+	}
+	else {
 		cout << "Error - file bad" << endl;
 	}
 	Eingabedatei.close();
+
+	TEST_display_nodelist(); 
+	TEST_show_neighbours_for_nodelist_at(0);
 }
 
-void TEST_display_nodelist() {
-	for (int i = 0; !nodelist.empty() && i < nodelist.size(); i++) {
-		cout << "Element " << i << ": " << nodelist.at(i).id << " | lat: " << nodelist.at(i).lat << " | lon: " << nodelist.at(i).lon <<  endl;
-	}
-	cout << "TEST_display_nodelist - finished" << endl;
-}
-void TEST_show_neighbours_for_nodelist_at(int index) {
-	for (int i = 0; !nodelist.at(index).neigbours.empty() && i < nodelist.at(index).neigbours.size(); i++) {
-		cout << nodelist.at(index).neigbours.at(i).id << endl;
-	}
-	cout << "TEST_show_neighbours_for_nodelist_at - finished" << endl;
-}
 
-int main() {
-	// TemporÃ¤r
+
+/*int main() {
+	// Temporär
 	unsigned long long startID;
 	unsigned long long zielID;
 	cout << "Start ID angeben:" << endl;
@@ -257,4 +283,4 @@ int main() {
 	// Visualisierung
 
 	return 0;
-}
+}*/
