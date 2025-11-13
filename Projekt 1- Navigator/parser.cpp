@@ -4,6 +4,7 @@
 #include <vector>
 #include <windows.h>
 #include <math.h>
+#include "head.h"
 
 using namespace std;
 
@@ -19,9 +20,6 @@ struct node {
 	bool visited = false;
 	vector <node> neigbours;
 };
-vector <node> nodelist; // List mit allen Nodes (wird vom Parser belegt)
-node* ptrstart; // pointer auf den Startnode (wird vom Parser belegt)
-node* ptrziel; // pointer auf den Zielnode (wird vom Parser belegt)
 
 unsigned long long powerof(unsigned long long base, unsigned long long pot) { // pow aber für unsigned long long
 	if (pot == 0) {
@@ -77,14 +75,16 @@ void add_intersection_to_nodelist(string data, unsigned long long pstartID, unsi
 	}
 	templon = templon + 8.0;
 	node* crossing = new node{ tempid,templat,templon,-1.0,nullptr };
+	
+	//???
 	if (tempid == pstartID) {
 		ptrstart = crossing;
 	}
 	else if (tempid == pzielID) {
-		ptrziel = crossing;
+	ptrziel = crossing;
 	}
 	nodelist.push_back(*crossing);
-}
+	}
 
 void addneigbour(string nodeA, string nodeB) {
 	unsigned long long nodeAid = 0;
@@ -118,31 +118,31 @@ void addneigbour(string nodeA, string nodeB) {
 	bool foundB = false;
 	int posA = 0;
 	int posB = 0;
-	for (int i = 0; !nodelist.empty() && i < nodelist.size(); i++) {
-		if (nodelist.at(i).id == nodeAid) {
+	for (int i = 0; !adjList.empty() && i < adjList.size(); i++) {
+		if (adjList.at(i).id == nodeAid) {
 			posA = i;
 			foundA = true;
 		}
-		if (nodelist.at(i).id == nodeBid) { // Hier kein else if falls start = ziel ist
+		if (adjList.at(i)->id == nodeBid) { // Hier kein else if falls start = ziel ist
 			posB = i;
 			foundB = true;
 		}
 	}
 	if (foundA && foundB) {
-		nodelist.at(posA).neigbours.push_back(nodelist.at(posB));
-		nodelist.at(posB).neigbours.push_back(nodelist.at(posA));
+		adjList.at(posA).neigbours.push_back(adjList.at(posB));
+		adjList.at(posB).neigbours.push_back(adjList.at(posA));
 	}
 }
 
 void TEST_display_nodelist() {
-	for (int i = 0; !nodelist.empty() && i < nodelist.size(); i++) {
-		cout << "Element " << i << ": " << nodelist.at(i).id << " | lat: " << nodelist.at(i).lat << " | lon: " << nodelist.at(i).lon << endl;
+	for (int i = 0; !adjList.empty() && i < adjList.size(); i++) {
+		cout << "Element " << i << ": " << adjList.at(i)->id << " | lat: " << adjList.at(i)->lat << " | lon: " << adjList.at(i)->lon << endl;
 	}
 	cout << "TEST_display_nodelist - finished" << endl;
 }
 void TEST_show_neighbours_for_nodelist_at(int index) {
-	for (int i = 0; !nodelist.at(index).neigbours.empty() && i < nodelist.at(index).neigbours.size(); i++) {
-		cout << nodelist.at(index).neigbours.at(i).id << endl;
+	for (int i = 0; !adjList.at(index)->neighbors.empty() && i < adjList.at(index)->neighbors.size(); i++) {
+		cout << adjList.at(index)->neighbors.at(i).first->id << endl;
 	}
 	cout << "TEST_show_neighbours_for_nodelist_at - finished" << endl;
 }
@@ -175,7 +175,6 @@ void parser(unsigned long long pstartID, unsigned long long pzielID) { // Trägt 
 
 
 	
-
 	fstream Eingabedatei;
 	Eingabedatei.open(filePath);
 	if (Eingabedatei.good()) {
@@ -264,23 +263,3 @@ void parser(unsigned long long pstartID, unsigned long long pzielID) { // Trägt 
 }
 
 
-
-/*int main() {
-	// Temporär
-	unsigned long long startID;
-	unsigned long long zielID;
-	cout << "Start ID angeben:" << endl;
-	cin >> startID;
-	cout << "Ziel ID angeben:" << endl;
-	cin >> zielID;
-	cout << "----------" << endl;
-	// Parser
-	parser(startID, zielID);
-	// Djkstra
-
-
-
-	// Visualisierung
-
-	return 0;
-}*/

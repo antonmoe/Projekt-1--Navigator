@@ -21,6 +21,9 @@
     <ClCompile Include="parser.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="visual.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="head.h">

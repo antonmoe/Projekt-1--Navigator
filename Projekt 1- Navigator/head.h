@@ -24,13 +24,14 @@ struct Node {
 	}
 
 	vector<pair<Node*, float>> neighbors;
-	//<Nachbar node und dist zu diesem knoten vor djikstra>
-	//int zu double und mit getDIst verbinden
+
 
 };
 
 Node* ptrStart; 
 Node* ptrZiel;
+
+
 
 vector<Node*> adjList;
 	
