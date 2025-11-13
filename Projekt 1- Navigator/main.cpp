@@ -1,39 +1,35 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <vector> 
 #include <queue>
+#include <stdio.h>
 
 
 using namespace std; 
 
-
-#define INF 999; //TODO: Höchserer Wert
-
-
+#define INF 99999 //TODO: HÃ¶herer Wert
 
 
 struct Node {
 	//int id; 
 	//int lon, lat; 
+	string name;
 	bool visited = false;
-	Node* PrevNode = nullptr; // Pointer auf den vorherigen Knoten im Pfad
-	int distance = INF;
-	vector<pair<Node*, int>> neighbors; // Nachbarn + Kantengewicht
+
+	Node* prevNode = nullptr; // Pointer auf den vorherigen Knoten im Pfad
+	double distance = INF;
+
+	vector<pair<Node*, int>> neighbors; 
+
+	// Nachbarn + Kantengewicht
 	// Liste {children Nodes, dist} 
 	// {1,2}, {2,4}, ...
 };
 
 struct Graph {
 	vector<Node*> adjList;
-
-	// Liste an {Startnodes und Listen von {Nodes,Dist}}
-	// 0 --> {1,4}, {2,4}  
-	// 1--> {0,4}, {2,2}	
-	// usw.
-
-	int size = adjMatrix.size();
+	int size = adjList.size();
 
 };
-
 
 struct CompareDist {
 	bool operator ()(const Node* a, const Node* b) {
@@ -41,55 +37,95 @@ struct CompareDist {
 	}
 };
 
-
-struct Path {
-	vector<Node> nodesInPath;
-	int totalDistance;
-};
-
-
-
+void printPath(Node* target) {
+	if (target->prevNode != nullptr) {
+		printPath(target->prevNode);
+	}
+	cout << target->name << " ";
+}
 
 
-vector<Node> dijkstra(Node* SN, Node* TN, Graph& graph, vector<Node>& dist, vector<Node, Node> prevNode ) { //{Node, prevNode}
+void dijkstra(Node* SN, Node* TN, Graph graph) { //{Node, prevNode}
 	
 	priority_queue <Node*, vector<Node*>, CompareDist > pq; // Min-Heap
-	//Node mit der kleinsten Distanz hat höchste Priorität 
-	
+	//Node mit der kleinsten Distanz ist oben 
+
+
 	SN->distance = 0;	// Startknoten Distanz auf 0 setzen
-	pq.push(SN); // Startknoten in die Queue einfügen
+	pq.push(SN); // Startknoten in die Queue einfÃ¼gen
 
 
 	while (!pq.empty()) {
 
-		Node* tmpNode = pq.top(); 
-		
-		cout << tmpNode->distance << "  " << tmpNode->PrevNode << endl;
+		Node* tmpNode = pq.top();
+
+		printf( "Visiting Node: %s with current distance: %f\n", tmpNode->name.c_str(), tmpNode->distance);
 
 		pq.pop(); // Knoten mit der kleinsten Distanz auslesen und entfernen
 
-
+		if (tmpNode->visited) {
+			continue; // Bereits besuchter Knoten
+		}
+		
+		
+		printf("Checking neighbors of Node: %s\n", tmpNode->name.c_str());
+		for (auto& neighborPair : tmpNode->neighbors) {
+			Node* neighbor = neighborPair.first;	//nachbarknoten
+			int weight = neighborPair.second;		//dist. zu Nachbarknoten
+			int newDist = tmpNode->distance + weight;
+			printf("Neighbor: %s, Edge Weight: %d, New Distance: %d, Current Distance: %f\n", neighbor->name.c_str(), weight, newDist, neighbor->distance);
+			if (newDist < neighbor->distance) {
+				neighbor->distance = newDist;
+				neighbor->prevNode = tmpNode;
+				pq.push(neighbor); // Aktualisierten Nachbarknoten in die Queue einfÃ¼gen
+			}
+		}
+		tmpNode->visited = true; // Knoten als besucht markieren
+		printf("Node: %s marked as visited.\n", tmpNode->name.c_str());
 	}
-	
 
-}
+	// Ergebnis ausgeben
+	cout << "\nDistanz "<< SN->name <<" -> "<< TN->name << ":  " << TN->distance << endl;
+
+	// Pfad rekonstruieren u. Ausgeben
+	cout << "Pfad: ";
+	Node* current = TN;
+	vector<Node*> path;
+
+	printPath(TN);
+
+	cout << endl;
+
+
+};
 
 	
 int main() {
 
-	Node A, B, C, D;
+	Node A, B, C, D, E, F;
 	Graph g;
 
-	A.neighbors = {{ &B, 1 }, { &C, 2 }};
-	B.neighbors = { { &A, 1 }, { &D, 3 } };
-	C.neighbors = { { &A, 2 }, { &D, 1 } };
-	D.neighbors = { { &B, 3 } };
+	A.name = "A";
+	B.name = "B";
+	C.name = "C";
+	D.name = "D";
+	E.name = "E";
+	F.name = "F";	
+
+
+	A.neighbors = { { &B, 4 }, { &C, 4 } };
+	B.neighbors = { { &A, 4 }, { &C, 2 } };
+	C.neighbors = { { &A, 2 }, { &B, 2 }, { &D, 3 }, { &E , 1 }, { &F , 6 } };
+	D.neighbors = { { &C, 3 }, { &F, 2 } };
+	E.neighbors = { { &C, 1 }, { &F, 3 } };
+	F.neighbors = { { &D, 2 }, { &E, 3 } , { &C, 6 } };
 	
+	g.adjList = { &A, &B, &C, &D , &E , & F};
 
 
+	dijkstra(&A, &F, g); 
 
-
-
-return 0;
+	
+	return 0;
 
 }
